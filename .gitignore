@@ -10,3 +10,11 @@ database/*.db
 reports/*.pdf
 .pytest_cache/
 .DS_Store
+
+# Frontend & Node
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+frontend/out/
+*.log
