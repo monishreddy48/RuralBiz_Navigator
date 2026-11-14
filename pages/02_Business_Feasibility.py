@@ -4,7 +4,13 @@ Evaluates user inputs, calculates deterministic viability score, and renders GO/
 """
 import streamlit as st
 import plotly.graph_objects as go
-from utils.ui_components import load_custom_css, render_sidebar, render_disclaimer_footer
+from utils.ui_components import (
+    load_custom_css,
+    render_sidebar,
+    render_page_header,
+    render_context_bar,
+    render_disclaimer_footer
+)
 from i18n.translations import t
 from database.db import get_localities, get_businesses, get_competitors, save_assessment
 from core.hyperlocal_engine import calculate_hyperlocal_metrics
@@ -22,11 +28,16 @@ st.set_page_config(
 )
 
 load_custom_css()
-render_sidebar()
+render_sidebar(current_page="Feasibility")
 lang = st.session_state.get("language", "en")
 
-st.title("📊 " + t("nav_feasibility", lang))
-st.caption("Complete the assessment form to evaluate your rural enterprise viability and generate a decision recommendation.")
+render_page_header(
+    category="BUSINESS INTELLIGENCE",
+    title="📊 " + t("nav_feasibility", lang),
+    description="Complete the assessment form to evaluate your rural enterprise viability, calculate deterministic scoring, and generate a bank-ready GO / MODIFY / AVOID decision."
+)
+
+render_context_bar()
 
 localities_df = get_localities()
 businesses_df = get_businesses()
@@ -36,7 +47,10 @@ current_inputs = st.session_state.get("assessment_data", {})
 current_loc = st.session_state.get("locality", {})
 current_biz = st.session_state.get("business", {})
 
-with st.expander("📝 **Entrepreneur & Project Input Form**", expanded=True):
+# ==============================================================================
+# INPUT FORM
+# ==============================================================================
+with st.expander("📝 **Entrepreneur & Project Input Parameters**", expanded=True):
     col_f1, col_f2 = st.columns(2)
     
     with col_f1:
@@ -129,7 +143,9 @@ with st.expander("📝 **Entrepreneur & Project Input Form**", expanded=True):
             st.session_state["budget_search_capital"] = own_capital
             st.switch_page("pages/07_Business_Alternatives.py")
 
-# Run or re-calculate assessment
+# ==============================================================================
+# CALCULATION EXECUTION
+# ==============================================================================
 if run_btn or "viability_result" not in st.session_state or st.session_state.get("business", {}).get("category") != selected_category:
     errors = validate_assessment_inputs(own_capital, expected_investment)
     if errors:
@@ -194,7 +210,9 @@ if run_btn or "viability_result" not in st.session_state or st.session_state.get
             "recommendation": rec["decision"]
         })
 
-# Render Results
+# ==============================================================================
+# RENDER ASSESSMENT RESULTS
+# ==============================================================================
 if "viability_result" in st.session_state:
     st.markdown("---")
     
@@ -212,13 +230,15 @@ if "viability_result" in st.session_state:
         badge_class = f"badge-{rec['decision'].lower()}"
         st.markdown(
             f"""
-            <div style="background:#FFFFFF; border:1px solid #E2E8F0; padding:1.2rem; border-radius:12px;">
-                <div style="font-size:0.85rem; color:#64748B; font-weight:700; text-transform:uppercase;">Final Decision Recommendation</div>
-                <div style="display:flex; align-items:center; gap:12px; margin:8px 0;">
+            <div class="surface-card">
+                <div style="font-size:0.75rem; color:#6B7280; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">Final Decision Recommendation</div>
+                <div style="display:flex; align-items:center; gap:12px; margin:10px 0;">
                     <span class="{badge_class}">{rec['decision']}</span>
-                    <span style="font-size:1.2rem; font-weight:700; color:#1E293B;">{rec['decision_label']}</span>
+                    <span style="font-size:1.25rem; font-weight:800; color:#111827;">{rec['decision_label']}</span>
                 </div>
-                <div style="color:#4B5563; font-size:0.9rem;">Confidence: <b>{rec['confidence']}</b> &bull; Source: <i>{rec['source']}</i></div>
+                <div style="color:#4B5563; font-size:0.88rem; line-height:1.4;">
+                    Confidence: <b>{rec['confidence']}</b> &bull; Engine: <i>{rec['source']}</i>
+                </div>
             </div>
             """,
             unsafe_allow_html=True
@@ -228,28 +248,28 @@ if "viability_result" in st.session_state:
         score_val = viab["viability_score"]
         st.markdown(
             f"""
-            <div style="background:#FFFFFF; border:1px solid #E2E8F0; padding:1.2rem; border-radius:12px; text-align:center;">
-                <div style="font-size:0.85rem; color:#64748B; font-weight:700; text-transform:uppercase;">Viability Score</div>
-                <div style="font-size:2.8rem; font-weight:800; color:{viab['status_color']};">{score_val:.0f} <span style="font-size:1.2rem; color:#94A3B8;">/ 100</span></div>
-                <div style="font-weight:600; color:{viab['status_color']};">{viab['classification']}</div>
+            <div class="surface-card" style="text-align:center;">
+                <div style="font-size:0.75rem; color:#6B7280; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">Viability Score</div>
+                <div style="font-size:2.8rem; font-weight:800; color:{viab['status_color']}; line-height:1.1; margin:4px 0;">
+                    {score_val:.0f} <span style="font-size:1.15rem; color:#9CA3AF; font-weight:600;">/ 100</span>
+                </div>
+                <div style="font-weight:700; font-size:0.9rem; color:{viab['status_color']};">{viab['classification']}</div>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-    st.markdown("<br/>", unsafe_allow_html=True)
-
     # Grounded Bullet Reasons
-    st.markdown("#### 🎯 Key Grounded Decision Reasons")
+    st.markdown("#### 🎯 Grounded Decision Drivers")
     for r in rec["reasons"]:
-        st.markdown(f"• {r}")
+        st.markdown(f"• **{r}**")
 
     # Evidence Panel
     st.markdown(
         f"""
-        <div class="evidence-box">
-            <b>🔍 Evidence Summary:</b> {rec['evidence']}<br/>
-            <small><i>Note: {rec['disclaimer']}</i></small>
+        <div class="evidence-panel">
+            <b>🔍 Evidence &amp; Catchment Baseline:</b> {rec['evidence']}<br/>
+            <small style="color:#047857;"><i>Benchmark Notice: {rec['disclaimer']}</i></small>
         </div>
         """,
         unsafe_allow_html=True
@@ -259,11 +279,11 @@ if "viability_result" in st.session_state:
 
     # Factor Breakdown Visualization (Horizontal Bars & Radar)
     st.subheader("📈 Viability Factor Breakdown")
+    st.caption("Weighted dimensional performance across market demand, competition, accessibility, finance, growth, and risk resilience.")
     
     col_chart1, col_chart2 = st.columns([3, 2])
     
     with col_chart1:
-        # Horizontal Bar Chart
         categories = list(viab["breakdown"].keys())
         scores = list(viab["breakdown"].values())
         
@@ -273,22 +293,23 @@ if "viability_result" in st.session_state:
             x=scores,
             y=categories,
             orientation='h',
-            marker_color=colors_list,
+            marker=dict(color=colors_list, line=dict(color='#FFFFFF', width=1)),
             text=[f"{s:.1f}" for s in scores],
             textposition='auto',
         ))
         fig_bar.update_layout(
-            title="Factor Viability Scores (0 - 100)",
-            xaxis=dict(range=[0, 100], title="Score"),
+            title="Dimensional Scores (0 – 100)",
+            xaxis=dict(range=[0, 100], title="Score", gridcolor="#F3F4F6"),
             yaxis=dict(autorange="reversed"),
             template="plotly_white",
             height=320,
-            margin=dict(l=20, r=20, t=40, b=20)
+            margin=dict(l=20, r=20, t=40, b=20),
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)"
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
     with col_chart2:
-        # Radar Chart
         radar_cats = categories + [categories[0]]
         radar_scores = scores + [scores[0]]
         
@@ -296,16 +317,18 @@ if "viability_result" in st.session_state:
             r=radar_scores,
             theta=radar_cats,
             fill='toself',
-            fillcolor='rgba(15, 118, 110, 0.25)',
-            line=dict(color='#0F766E', width=2),
+            fillcolor='rgba(15, 81, 50, 0.2)',
+            line=dict(color='#0F5132', width=2),
             name="Viability Profile"
         ))
         fig_radar.update_layout(
-            polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
+            polar=dict(radialaxis=dict(visible=True, range=[0, 100], gridcolor="#E5E7EB")),
             title="Factor Radar Footprint",
             template="plotly_white",
             height=320,
-            margin=dict(l=30, r=30, t=40, b=20)
+            margin=dict(l=30, r=30, t=40, b=20),
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)"
         )
         st.plotly_chart(fig_radar, use_container_width=True)
 
@@ -313,25 +336,56 @@ if "viability_result" in st.session_state:
 
     # SWOT Framework
     st.subheader("🧭 Strategic SWOT Analysis")
+    st.caption("Objective risk and opportunity profiling grounded in your local catchment density and debt requirements.")
     swot = rec.get("swot", {})
     
     sc1, sc2 = st.columns(2)
     with sc1:
-        st.markdown("##### 🟢 **Strengths**")
-        for s in swot.get("strengths", []):
-            st.markdown(f"• {s}")
-            
-        st.markdown("##### 🔵 **Opportunities**")
-        for o in swot.get("opportunities", []):
-            st.markdown(f"• {o}")
+        st.markdown(
+            f"""
+            <div class="swot-card swot-strengths">
+                <div class="swot-title">🟢 Strengths</div>
+                <ul class="swot-list">
+                    {''.join([f'<li>{s}</li>' for s in swot.get('strengths', [])])}
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            f"""
+            <div class="swot-card swot-opportunities">
+                <div class="swot-title">🔵 Opportunities</div>
+                <ul class="swot-list">
+                    {''.join([f'<li>{o}</li>' for o in swot.get('opportunities', [])])}
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     with sc2:
-        st.markdown("##### 🟡 **Weaknesses**")
-        for w in swot.get("weaknesses", []):
-            st.markdown(f"• {w}")
-            
-        st.markdown("##### 🔴 **Threats**")
-        for th in swot.get("threats", []):
-            st.markdown(f"• {th}")
+        st.markdown(
+            f"""
+            <div class="swot-card swot-weaknesses">
+                <div class="swot-title">🟡 Weaknesses</div>
+                <ul class="swot-list">
+                    {''.join([f'<li>{w}</li>' for w in swot.get('weaknesses', [])])}
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            f"""
+            <div class="swot-card swot-threats">
+                <div class="swot-title">🔴 Threats</div>
+                <ul class="swot-list">
+                    {''.join([f'<li>{th}</li>' for th in swot.get('threats', [])])}
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 render_disclaimer_footer(lang)

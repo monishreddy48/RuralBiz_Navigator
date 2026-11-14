@@ -5,7 +5,7 @@ Smart India Hackathon 2026 Problem Statement SIH26091 / PS 91
 import streamlit as st
 from database.db import init_db
 from utils.demo_scenarios import load_scenario
-from utils.ui_components import _apply_scenario_to_state
+from utils.ui_components import _apply_scenario_to_state, load_custom_css
 
 # Page configuration
 st.set_page_config(
@@ -15,8 +15,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Initialize SQLite database
+# Initialize SQLite database & styles
 init_db()
+load_custom_css()
 
 # Initialize session state with Scenario 1 (Food Processing in Agri Hub)
 if "assessment_data" not in st.session_state:

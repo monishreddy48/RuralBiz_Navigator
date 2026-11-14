@@ -4,7 +4,13 @@ Grounds natural-language queries in deterministic calculation facts.
 Outputs explainable structured advice: ANSWER, WHY, EVIDENCE, FINANCIAL IMPACT, RISK, NEXT STEP.
 """
 import streamlit as st
-from utils.ui_components import load_custom_css, render_sidebar, render_disclaimer_footer
+from utils.ui_components import (
+    load_custom_css,
+    render_sidebar,
+    render_page_header,
+    render_context_bar,
+    render_disclaimer_footer
+)
 from i18n.translations import t
 from ai.router import ask_advisory_assistant, get_active_provider
 
@@ -15,18 +21,37 @@ st.set_page_config(
 )
 
 load_custom_css()
-render_sidebar()
+render_sidebar(current_page="AI")
 lang = st.session_state.get("language", "en")
 
-st.title("🤖 " + t("nav_ai", lang))
-st.caption("Ask questions about your business viability, financial structure, EMI calculations, or government schemes.")
+render_page_header(
+    category="AI SUPPORT",
+    title="🤖 " + t("nav_ai", lang),
+    description="Ask natural-language questions about your business viability, financial plan, EMI structure, or matched government schemes in English, Hindi, Telugu, or Kannada."
+)
+
+render_context_bar()
 
 # Provider Status Banner
 _, provider_status = get_active_provider()
 if "Demo Mode" in provider_status:
-    st.info(f"💡 **Active Engine:** {provider_status} — *Using deterministic local knowledge base. Zero external API calls required.*")
+    st.markdown(
+        """
+        <div class="surface-card" style="border-left: 4px solid #10B981; padding:10px 14px; margin-bottom:1rem;">
+            <b>🤖 Active AI Engine:</b> Demo Mode (Deterministic Local Knowledge Base) &bull; <i>No external API keys or cloud dependencies required.</i>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 else:
-    st.success(f"⚡ **Active Engine:** {provider_status} — *Connected via API.*")
+    st.markdown(
+        f"""
+        <div class="surface-card" style="border-left: 4px solid #0F5132; padding:10px 14px; margin-bottom:1rem;">
+            <b>⚡ Active AI Engine:</b> {provider_status} &bull; <i>Live API Connected.</i>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Extract active context
 loc = st.session_state.get("locality", {})
@@ -62,6 +87,8 @@ context_package = {
 
 # Quick Prompt Suggestions
 st.markdown("#### 💡 Quick Inquiry Prompts")
+st.caption("Click any prompt below to query the advisory assistant based on your loaded assessment facts:")
+
 col_p1, col_p2, col_p3 = st.columns(3)
 with col_p1:
     if st.button("❓ Why is this business recommended?", use_container_width=True):
@@ -79,6 +106,7 @@ with col_p3:
     if st.button("🌐 Explain this in Hindi / हिंदी", use_container_width=True):
         st.session_state["pending_prompt"] = "Explain this recommendation and loan calculation in Hindi."
 
+st.markdown("<br/>", unsafe_allow_html=True)
 st.markdown("---")
 
 # Initialize Chat History
@@ -86,7 +114,7 @@ if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = [
         {
             "role": "assistant",
-            "content": f"Namaste! I am your RuralBiz Advisor for **{loc.get('village_name', 'your village')}**. I have analyzed your proposed **{biz.get('business_name', 'business')}** (Viability: {viab.get('viability_score', 78):.0f}/100, Recommendation: **{rec.get('decision', 'GO')}**). Ask me any question about your market, cash flow, EMI, or government subsidies!"
+            "content": f"Namaste! I am your RuralBiz Advisor for **{loc.get('village_name', 'your village')}**. I have analyzed your proposed **{biz.get('business_name', 'business')}** (Viability: {viab.get('viability_score', 78):.0f}/100, Recommendation: **{rec.get('decision', 'GO')}**). Ask me any question about your local market, cash flow, EMI, or government subsidies!"
         }
     ]
 

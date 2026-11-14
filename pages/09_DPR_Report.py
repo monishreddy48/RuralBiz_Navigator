@@ -3,7 +3,14 @@ RuralBiz Navigator - Detailed Project Report (DPR) Generator
 Generates bankable 20-section project proposal and provides instant PDF download.
 """
 import streamlit as st
-from utils.ui_components import load_custom_css, render_sidebar, render_disclaimer_footer
+import pandas as pd
+from utils.ui_components import (
+    load_custom_css,
+    render_sidebar,
+    render_page_header,
+    render_context_bar,
+    render_disclaimer_footer
+)
 from i18n.translations import t
 from reports.pdf_generator import generate_dpr_pdf
 from utils.formatting import format_inr
@@ -16,11 +23,16 @@ st.set_page_config(
 )
 
 load_custom_css()
-render_sidebar()
+render_sidebar(current_page="DPR")
 lang = st.session_state.get("language", "en")
 
-st.title("📄 " + t("nav_dpr", lang))
-st.caption("Generate a professional, bank-ready Detailed Project Report (DPR) combining market data, financial schedules, SWOT, and scheme options.")
+render_page_header(
+    category="FINANCIAL TOOLS",
+    title="📄 " + t("nav_dpr", lang),
+    description="Generate a professional, bank-ready Detailed Project Report (DPR) combining market data, debt schedules, SWOT matrix, and scheme options."
+)
+
+render_context_bar()
 
 assessment_data = st.session_state.get("assessment_data", {})
 loc = st.session_state.get("locality")
@@ -35,7 +47,9 @@ if not loc or not biz or not fin or not viab:
     st.warning("⚠️ Please complete or load an assessment first to compile your DPR.")
     st.stop()
 
-# Report Metadata Banner
+# ==============================================================================
+# SECTION 1: Report Metadata & KPIs
+# ==============================================================================
 st.subheader("📑 Report Specification & Key Metrics")
 
 c1, c2, c3, c4 = st.columns(4)
@@ -45,8 +59,11 @@ c3.metric("Viability Score", f"{viab.get('viability_score', 0):.0f} / 100", viab
 c4.metric("Advisory Recommendation", rec.get("decision", "MODIFY"), rec.get("decision_label"))
 
 st.markdown("<br/>", unsafe_allow_html=True)
+st.markdown("---")
 
-# Generate PDF button
+# ==============================================================================
+# SECTION 2: PDF Download & 20-Section Framework
+# ==============================================================================
 col_gen, col_info = st.columns([1.5, 2.5])
 
 with col_gen:
@@ -74,7 +91,14 @@ with col_gen:
         type="primary",
         use_container_width=True
     )
-    st.success("✅ PDF compiled successfully! Ready for bank loan submission.")
+    st.markdown(
+        """
+        <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:10px 12px; font-size:0.84rem; color:#166534; margin-top:12px;">
+            ✅ <b>PDF compiled successfully!</b> Ready for submission to District Task Force Committees (PMEGP), Lead District Managers (LDM), and commercial bank branch managers.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 with col_info:
     st.markdown("#### 📋 20-Section Bankable Framework")
@@ -85,9 +109,9 @@ with col_info:
         1. **Entrepreneur Profile & KYC Declaration**
         2. **Business Activity & Unit Benchmarks**
         3. **Locality Catchment & Connectivity Indices**
-        4. **Hyper-Local Market & Customer Pool (5-10 km)**
+        4. **Hyper-Local Market & Customer Pool (5–10 km)**
         5. **Competitor Mapping & Demand Gap Analysis**
-        6. **Weighted Viability Scoring (0-100)**
+        6. **Weighted Viability Scoring (0–100)**
         7. **Deterministic Strategic SWOT Framework**
         8. **CapEx & Working Capital Structuring**
         9. **Institutional Debt & Equity Contribution**
@@ -105,14 +129,16 @@ with col_info:
         """
     )
 
+st.markdown("<br/>", unsafe_allow_html=True)
 st.markdown("---")
 
-# Quick Preview of Report Data
+# ==============================================================================
+# SECTION 3: Quick Preview of Report Data
+# ==============================================================================
 with st.expander("👀 **Preview Key DPR Tables (Amortization & Cash Flow)**"):
     t1, t2 = st.tabs(["12-Month P&L Cash Flow", "Repayment Amortization Schedule"])
     
     with t1:
-        import pandas as pd
         df_cf = pd.DataFrame(fin.get("cash_flow_12", []))
         st.dataframe(df_cf, use_container_width=True, hide_index=True)
         

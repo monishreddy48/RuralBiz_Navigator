@@ -5,7 +5,13 @@ Visualizes 5-10 km market catchment, competitors, customer pool, and local deman
 import streamlit as st
 import pandas as pd
 from streamlit_folium import st_folium
-from utils.ui_components import load_custom_css, render_sidebar, render_disclaimer_footer
+from utils.ui_components import (
+    load_custom_css,
+    render_sidebar,
+    render_page_header,
+    render_context_bar,
+    render_disclaimer_footer
+)
 from i18n.translations import t
 from utils.map_utils import build_folium_map, build_fallback_plotly_map
 from utils.formatting import format_inr
@@ -18,42 +24,55 @@ st.set_page_config(
 )
 
 load_custom_css()
-render_sidebar()
+render_sidebar(current_page="Market")
 lang = st.session_state.get("language", "en")
 
-st.title("📍 " + t("nav_market", lang))
-st.caption("Hyper-local catchment mapping, competitor analysis, and demand gap estimation in a 5–10 km rural radius.")
+render_page_header(
+    category="BUSINESS INTELLIGENCE",
+    title="📍 " + t("nav_market", lang),
+    description="Hyper-local catchment mapping, competitor density profiling, and unmet consumer demand estimation in a 5–10 km rural radius."
+)
+
+render_context_bar()
 
 locality = st.session_state.get("locality")
 business = st.session_state.get("business")
 hl = st.session_state.get("hyperlocal_metrics")
 
 if not locality or not business or not hl:
-    st.warning("⚠️ Please start an assessment on the Home or Feasibility page first.")
+    st.warning("⚠️ Please start or load an assessment on the Home or Feasibility page first.")
     st.stop()
 
-# 1. Locality Catchment Demographics Overview
-st.subheader(f"🏘️ Catchment Profile: {locality.get('village_name', 'Village')}")
+# ==============================================================================
+# SECTION 1: Catchment Demographics Overview
+# ==============================================================================
+st.subheader(f"🏘️ Catchment Profile: {locality.get('village_name', 'Village')} ({locality.get('district', '')}, {locality.get('state', '')})")
 
 m1, m2, m3, m4, m5 = st.columns(5)
 m1.metric("Local Population", f"{locality.get('population', 0):,}", f"{locality.get('households', 0):,} Households")
-m2.metric("Mandi / Market Distance", f"{locality.get('market_distance_km', 0):.1f} km", "Nearest hub")
+m2.metric("Mandi / Hub Distance", f"{locality.get('market_distance_km', 0):.1f} km", "Nearest APMC market")
 m3.metric("Road Connectivity", f"{locality.get('road_access_score', 0):.0f} / 100", "Paved road index")
 m4.metric("Purchasing Power", f"{locality.get('purchasing_power_index', 0):.0f} / 100", "Income tier")
-m5.metric("Target Customer Pool", f"{hl.get('customer_pool', 0):,} HHs", "5-10 km radius")
+m5.metric("Target Customer Pool", f"{hl.get('customer_pool', 0):,} HHs", "5–10 km radius")
 
+st.markdown("<br/>", unsafe_allow_html=True)
 st.markdown("---")
 
-# 2. GIS Map Visualization (Folium vs Plotly Fallback)
+# ==============================================================================
+# SECTION 2: GIS Map Visualization
+# ==============================================================================
 st.subheader("🗺️ 5 km & 10 km Hyper-Local Catchment Map")
+
 st.markdown(
     """
-    <div style="font-size:0.88rem; color:#4B5563; margin-bottom:10px;">
-        <span style="color:#10B981; font-weight:bold;">● 5 km Circle (Inner):</span> Immediate hyper-local consumer footfall & daily delivery zone.<br/>
-        <span style="color:#3B82F6; font-weight:bold;">● 10 km Circle (Outer):</span> Weekly market / Haat catchment & regional wholesale radius.<br/>
-        <span style="color:#EF4444; font-weight:bold;">★ Red Pin:</span> Your proposed unit &bull;
-        <span style="color:#D97706; font-weight:bold;">● Orange Pins:</span> Existing local competitors &bull;
-        <span style="color:#2563EB; font-weight:bold;">◆ Blue Pin:</span> APMC Mandi / Market Center.
+    <div class="surface-card" style="padding: 12px 16px; margin-bottom: 12px;">
+        <div style="font-size:0.85rem; line-height:1.6; color:#374151;">
+            <span style="color:#0F5132; font-weight:700;">● 5 km Circle (Inner):</span> Immediate daily footfall & local walk-in zone.<br/>
+            <span style="color:#2563EB; font-weight:700;">● 10 km Circle (Outer):</span> Weekly market / Haat catchment & regional wholesale trading radius.<br/>
+            <span style="color:#DC2626; font-weight:700;">★ Red Pin:</span> Your proposed unit &bull;
+            <span style="color:#D97706; font-weight:700;">● Orange Pins:</span> Existing local competitors &bull;
+            <span style="color:#2563EB; font-weight:700;">◆ Blue Pin:</span> APMC Mandi / Commercial Center.
+        </div>
     </div>
     """,
     unsafe_allow_html=True
@@ -61,11 +80,13 @@ st.markdown(
 
 competitors_df = get_competitors(locality_id=locality.get("village_id"), business_type=business.get("category"))
 
-map_mode = st.radio(
-    "Select Map Mode",
-    options=["Interactive Leaflet GIS Map (OpenStreetMap/Carto)", "Offline Synthetic Scatter Map (Plotly fallback)"],
-    horizontal=True
-)
+col_mode, col_space = st.columns([2, 1])
+with col_mode:
+    map_mode = st.radio(
+        "Select Map Renderer",
+        options=["Interactive Leaflet GIS Map (CartoDB / OSM)", "Offline Synthetic Scatter Map (Plotly fallback)"],
+        horizontal=True
+    )
 
 if "Interactive Leaflet" in map_mode:
     try:
@@ -84,10 +105,14 @@ else:
     fig_fallback = build_fallback_plotly_map(locality, competitors_df, business.get("business_name", "Venture"))
     st.plotly_chart(fig_fallback, use_container_width=True)
 
+st.markdown("<br/>", unsafe_allow_html=True)
 st.markdown("---")
 
-# 3. Market Gap & Demand Insights
+# ==============================================================================
+# SECTION 3: Market Gap & Demand Insights
+# ==============================================================================
 st.subheader("💡 Hyper-Local Demand & Market Gap")
+st.caption("Quantified spending deficit and competition saturation within the immediate service radius.")
 
 col_g1, col_g2, col_g3 = st.columns(3)
 with col_g1:
@@ -100,20 +125,22 @@ with col_g2:
     st.metric(
         "Local Competition Score",
         f"{hl.get('competition_score', 0):.1f} / 100",
-        f"{hl.get('num_competitors', 0)} competitor(s)"
+        f"{hl.get('num_competitors', 0)} competitor(s) in catchment"
     )
 with col_g3:
     st.metric(
         "Local Opportunity Index",
         f"{hl.get('local_opportunity_score', 0):.1f} / 100",
-        "Demand vs Competition"
+        "Demand vs Competition Balance"
     )
 
 st.markdown("<br/>", unsafe_allow_html=True)
 
-# 4. Competitor Table
+# ==============================================================================
+# SECTION 4: Competitor Breakdown Table
+# ==============================================================================
 st.subheader(f"👥 Existing Local Competitors ({business.get('category')})")
-st.markdown("<span class='prototype-tag'>Prototype simulated competitor data — for demonstration only.</span>", unsafe_allow_html=True)
+st.markdown("<span class='prototype-tag'>Simulated benchmark competitor registry — for demonstration only.</span>", unsafe_allow_html=True)
 
 if competitors_df is not None and not competitors_df.empty:
     display_cols = ["business_name", "price_level", "customer_rating", "estimated_monthly_sales", "distance_from_center", "strength", "weakness"]
