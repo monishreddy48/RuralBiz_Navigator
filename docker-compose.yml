@@ -44,3 +44,4 @@ services:
 networks:
   ruralbiz-network:
     driver: bridge
+

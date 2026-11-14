@@ -19,3 +19,4 @@ Write-Host "  - API Swagger:  http://127.0.0.1:8000/docs" -ForegroundColor Yello
 Write-Host ""
 
 Start-Process "http://localhost:3000"
+

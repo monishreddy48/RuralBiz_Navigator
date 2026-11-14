@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useAssessment } from "@/context/AssessmentContext";
 import { useAuth } from "@/context/AuthContext";
+import { downloadDprPdf } from "@/lib/api";
 import {
   FileSpreadsheet,
   Download,
@@ -36,15 +37,7 @@ export default function DprPage() {
         tenure_months: params.tenure_months,
       };
 
-      const res = await fetch("http://localhost:8000/api/v1/reports/dpr/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error("Backend PDF endpoint error");
-
-      const blob = await res.blob();
+      const blob = await downloadDprPdf(payload);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

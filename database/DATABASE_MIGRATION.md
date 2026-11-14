@@ -120,3 +120,4 @@ CREATE POLICY entrepreneur_isolation_policy ON assessments
     FOR ALL
     USING (user_id = current_setting('request.jwt.claim.sub', true));
 ```
+
