@@ -38,3 +38,4 @@ assert(BUSINESS_CATEGORIES.includes("Common Service Centre (CSC) & Digital Kiosk
 console.log("✓ All profile constraint tests passed.");
 
 console.log("=== All Auth Tests Passed Successfully ===");
+
