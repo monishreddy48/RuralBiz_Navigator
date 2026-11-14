@@ -212,6 +212,27 @@ export async function queryVoiceAdvisor(
   return await res.json();
 }
 
+export async function downloadDprPdf(payload: {
+  entrepreneur_name?: string;
+  village_id: string;
+  category: string;
+  expected_investment: number;
+  own_capital: number;
+  experience_level?: string;
+  is_existing?: boolean;
+}): Promise<Blob> {
+  const res = await fetch(`${API_BASE_URL}/reports/dpr/download`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Failed to generate DPR PDF (HTTP ${res.status})`);
+  }
+  return await res.blob();
+}
+
 export function getVoiceWebSocketUrl(): string {
   // Convert http/https URL to ws/wss
   const httpUrl = API_BASE_URL;

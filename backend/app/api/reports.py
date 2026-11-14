@@ -20,10 +20,11 @@ router = APIRouter(prefix="/reports", tags=["DPR Reports"])
 
 class DPRDownloadRequest(BaseModel):
     user_name: Optional[str] = "Demo Entrepreneur"
+    entrepreneur_name: Optional[str] = None
     village_id: str = "VIL_001"
     category: str = "Food Processing"
     expected_investment: float = 215000.0
-    own_capital: float = 300000.0
+    own_capital: float = 53750.0
     experience_level: str = "Intermediate"
     is_existing: bool = False
     monthly_income: float = 30000.0
@@ -56,7 +57,7 @@ async def download_dpr(req: DPRDownloadRequest):
     schemes = evaluate_schemes(req.expected_investment, req.category, ["General", "Rural"], req.is_existing)
     
     assessment_data = {
-        "name": req.user_name,
+        "name": req.entrepreneur_name or req.user_name or "Entrepreneur",
         "village_id": req.village_id,
         "category": req.category,
         "own_capital": req.own_capital,
