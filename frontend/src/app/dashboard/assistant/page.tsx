@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAssessment } from "@/context/AssessmentContext";
 import { useAuth } from "@/context/AuthContext";
@@ -49,6 +49,19 @@ export default function AssistantPage() {
         "Namaste! I am your RuralBiz AI Advisor. I can explain your debt calculations, local competitor risks, and government subsidy steps in English, Hindi, Telugu, or Kannada.",
     },
   ]);
+
+  // Update initial greeting when language changes in text mode
+  useEffect(() => {
+    const greetings: Record<string, string> = {
+      en: "Hello! I am your RuralBiz AI Advisor. I can explain your debt calculations, local competitor risks, and government subsidy steps in English, Hindi, Telugu, or Kannada.",
+      hi: "नमस्ते! मैं आपका ग्रामीण व्यापार सलाहकार हूँ। मैं आपकी ऋण ईएमआई, स्थानीय बाजार जोखिम और पीएमईजीपी सब्सिडी के बारे में हिंदी में बात कर सकता हूँ।",
+      te: "నమస్కారం! నేను మీ రూరల్ బిజ్ సలహాదారుని. మీ వ్యాపార లోన్, ఇఎంఐ, మరియు పిఎమ్‌ఇజిపి సಬ್సిడీ వివరాలు తెలుసుకోవడానికి అడగండి.",
+      kn: "ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ಗ್ರಾಮೀಣ ವ್ಯಾಪಾರ ಸಲಹೆಗಾರ. ನಿಮ್ಮ ಸಾಲದ ಇಎಂಐ, ಸ್ಥಳೀಯ ಮಾರುಕಟ್ಟೆ ಅಪಾಯಗಳು, ಮತ್ತು ಪಿಎಂಇಜಿಪಿ ಸಬ್ಸಿಡಿ ಕುರಿತು ಕನ್ನಡದಲ್ಲಿ ಕೇಳಿ.",
+    };
+    if (messages.length <= 1) {
+      setMessages([{ role: "assistant", content: greetings[language] || greetings.en }]);
+    }
+  }, [language]);
 
   const handleSend = async (questionText?: string) => {
     const q = questionText || input;

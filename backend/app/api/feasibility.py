@@ -29,10 +29,14 @@ async def evaluate_feasibility(req: FeasibilityRequest):
     hl_metrics = calculate_hyperlocal_metrics(locality, business, competitors_df)
     
     # 2. Financial planning
+    fin_sales = float(req.monthly_sales) if (req.monthly_sales and req.monthly_sales > 0) else float(business.get("typical_monthly_sales", 65000.0))
     fin_plan = calculate_financial_plan(
         project_cost=req.expected_investment,
         own_contribution=req.own_capital,
-        monthly_sales=float(business.get("typical_monthly_sales", 65000.0)),
+        annual_interest_rate=float(req.annual_interest_rate or 9.5),
+        tenure_months=int(req.tenure_months or 60),
+        moratorium_months=int(req.moratorium_months if req.moratorium_months is not None else 3),
+        monthly_sales=fin_sales,
         variable_cost_ratio=float(business.get("variable_cost_ratio", 0.48)),
         monthly_fixed_cost=float(business.get("monthly_fixed_cost", 7500.0)),
         unit_price=float(business.get("unit_price_estimate", 80.0))
@@ -45,23 +49,29 @@ async def evaluate_feasibility(req: FeasibilityRequest):
     recommendation = generate_business_recommendation(viability, fin_plan, hl_metrics, business, locality)
     recommendation["verdict"] = recommendation["decision"]
 
-    factor_labels = {
-        "market_demand": ("Market Demand", 0.25),
-        "competition": ("Competition Saturation", 0.15),
-        "accessibility": ("Infrastructure & Road Access", 0.10),
-        "financial_fit": ("Financial Fit & Debt Coverage", 0.20),
-        "growth_potential": ("Growth Potential", 0.15),
-        "risk_resilience": ("Risk Resilience", 0.15)
-    }
+    factor_mapping = [
+        (("Market Demand", "market_demand"), "Market Demand", 0.25),
+        (("Competition", "competition"), "Competition Saturation", 0.15),
+        (("Accessibility", "accessibility"), "Infrastructure & Road Access", 0.10),
+        (("Financial Fit", "financial_fit"), "Financial Fit & Debt Coverage", 0.20),
+        (("Growth Potential", "growth_potential"), "Growth Potential", 0.15),
+        (("Risk Resilience", "risk_resilience"), "Risk Resilience", 0.15),
+    ]
     factor_scores = []
-    for k, (label, weight) in factor_labels.items():
-        score = viability["breakdown"].get(k, 70.0)
+    breakdown_normalized = {}
+    for keys, label, weight in factor_mapping:
+        score = 70.0
+        for k in keys:
+            if k in viability.get("breakdown", {}):
+                score = float(viability["breakdown"][k])
+                break
         factor_scores.append({
             "factor": label,
             "score": round(score, 1),
             "weight": weight,
             "contribution": round(score * weight, 1)
         })
+        breakdown_normalized[keys[1]] = round(score, 1)
     
     # 5. Persist to DB
     assessment_id = save_assessment_record({

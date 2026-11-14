@@ -10,6 +10,10 @@ class FeasibilityRequest(BaseModel):
     category: str = Field(..., description="Business category, e.g. Food Processing")
     expected_investment: float = Field(..., ge=10000.0, le=10000000.0, description="Total project setup outlay in ₹")
     own_capital: float = Field(..., ge=0.0, le=10000000.0, description="Available entrepreneur equity in ₹")
+    annual_interest_rate: Optional[float] = 9.5
+    tenure_months: Optional[int] = 60
+    moratorium_months: Optional[int] = 3
+    monthly_sales: Optional[float] = None
     experience_level: str = Field(default="Intermediate (1-3 yrs)")
     is_existing: bool = Field(default=False)
     monthly_income: float = Field(default=30000.0, ge=0.0)

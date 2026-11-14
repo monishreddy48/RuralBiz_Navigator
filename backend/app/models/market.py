@@ -77,10 +77,11 @@ class SchemeMatchItem(BaseModel):
 
 # --- Simulator Models ---
 class SimulatorRequest(BaseModel):
-    village_id: str
-    category: str
-    project_cost: float
-    own_capital: float
+    village_id: Optional[str] = "VIL_001"
+    category: Optional[str] = "Food Processing"
+    project_cost: Optional[float] = 215000.0
+    own_capital: Optional[float] = None
+    own_contribution: Optional[float] = None
     sales_vol_delta_pct: float = Field(default=-20.0, ge=-50.0, le=50.0)
     price_delta_pct: float = Field(default=-5.0, ge=-30.0, le=30.0)
     var_cost_delta_pct: float = Field(default=15.0, ge=-20.0, le=50.0)

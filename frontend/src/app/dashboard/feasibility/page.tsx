@@ -160,7 +160,7 @@ export default function FeasibilityPage() {
               <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-700 text-white">
                 CASE 1: GO
               </span>
-              <span className="text-xs font-bold text-emerald-800">~82/100</span>
+              <span className="text-xs font-bold text-emerald-800">~85/100</span>
             </div>
             <p className="text-xs font-bold text-charcoal-900">Flour Mill &amp; Agro-Unit</p>
             <p className="text-[10px] text-charcoal-600 mt-0.5">Tumakuru &bull; ₹2.15L Outlay &bull; PMEGP 35%</p>
@@ -180,7 +180,7 @@ export default function FeasibilityPage() {
               <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-600 text-white">
                 CASE 2: MODIFY
               </span>
-              <span className="text-xs font-bold text-amber-800">~58/100</span>
+              <span className="text-xs font-bold text-amber-800">~71/100</span>
             </div>
             <p className="text-xs font-bold text-charcoal-900">Rural Manufacturing Unit</p>
             <p className="text-[10px] text-charcoal-600 mt-0.5">Nashik &bull; ₹3.20L Outlay &bull; Needs Equity</p>
@@ -200,7 +200,7 @@ export default function FeasibilityPage() {
               <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-red-700 text-white">
                 CASE 3: AVOID
               </span>
-              <span className="text-xs font-bold text-red-800">~44/100</span>
+              <span className="text-xs font-bold text-red-800">~55/100</span>
             </div>
             <p className="text-xs font-bold text-charcoal-900">Saturated Village Kirana</p>
             <p className="text-[10px] text-charcoal-600 mt-0.5">Peri-Urban &bull; 8 Competitors &bull; DSCR &lt; 1.0</p>
@@ -317,7 +317,7 @@ export default function FeasibilityPage() {
               Composite Viability
             </span>
             <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-5xl font-extrabold text-forest-950 font-editorial">
+              <span className={`text-5xl font-extrabold text-forest-950 font-editorial transition-opacity ${loading ? "opacity-40 animate-pulse" : "opacity-100"}`}>
                 {compositeScore}
               </span>
               <span className="text-sm font-semibold text-charcoal-500">/ 100</span>
@@ -326,7 +326,7 @@ export default function FeasibilityPage() {
             {/* Verdict Badge */}
             <div className="mt-4">
               <div
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl font-bold text-xs tracking-wider uppercase ${
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl font-bold text-xs tracking-wider uppercase transition-all ${
                   verdict === "GO"
                     ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
                     : verdict === "MODIFY"
@@ -342,7 +342,8 @@ export default function FeasibilityPage() {
             </div>
 
             <p className="mt-4 text-xs text-charcoal-600 leading-relaxed">
-              {feasibility?.recommendation?.grounded_reasons?.[0] ||
+              {feasibility?.recommendation?.reasons?.[0] ||
+                feasibility?.recommendation?.grounded_reasons?.[0] ||
                 "Business exhibits solid local catchment demand with adequate debt coverage capacity."}
             </p>
           </div>

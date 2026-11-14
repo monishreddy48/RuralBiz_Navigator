@@ -138,13 +138,17 @@ export function AssessmentProvider({ children }: { children: React.ReactNode }) 
     setError(null);
 
     try {
-      // Call FastAPI endpoints concurrently
-      const [feasibility, catchment, finance, stress, schemes, alternatives] = await Promise.all([
+      // Call FastAPI endpoints concurrently using Promise.allSettled for maximum fault-tolerance
+      const [feasibilityRes, catchmentRes, financeRes, stressRes, schemesRes, alternativesRes] = await Promise.allSettled([
         evaluateFeasibility({
           village_id: current.village_id,
           category: current.category,
           expected_investment: current.expected_investment,
           own_capital: current.own_capital,
+          annual_interest_rate: current.annual_interest_rate,
+          tenure_months: current.tenure_months,
+          moratorium_months: current.moratorium_months,
+          monthly_sales: current.monthly_sales,
         }),
         fetchCatchment(current.village_id, current.category),
         calculateFinance({
@@ -155,7 +159,10 @@ export function AssessmentProvider({ children }: { children: React.ReactNode }) 
           moratorium_months: current.moratorium_months,
         }),
         runStressTest({
+          village_id: current.village_id,
+          category: current.category,
           project_cost: current.expected_investment,
+          own_capital: current.own_capital,
           own_contribution: current.own_capital,
         }),
         matchSchemes({
@@ -165,14 +172,28 @@ export function AssessmentProvider({ children }: { children: React.ReactNode }) 
         fetchRankedAlternatives(current.village_id, current.own_capital),
       ]);
 
-      setResults({
-        feasibility,
-        catchment,
-        finance,
-        stress,
-        schemes,
-        alternatives,
-      });
+      const feasibility = feasibilityRes.status === "fulfilled" ? feasibilityRes.value : null;
+      const catchment = catchmentRes.status === "fulfilled" ? catchmentRes.value : null;
+      const finance = financeRes.status === "fulfilled" ? financeRes.value : null;
+      const stress = stressRes.status === "fulfilled" ? stressRes.value : null;
+      const schemes = schemesRes.status === "fulfilled" ? schemesRes.value : null;
+      const alternatives = alternativesRes.status === "fulfilled" ? alternativesRes.value : null;
+
+      if (feasibilityRes.status === "rejected") {
+        console.error("Feasibility calculation failed:", feasibilityRes.reason);
+      }
+      if (stressRes.status === "rejected") {
+        console.warn("Simulator stress calculation warning:", stressRes.reason);
+      }
+
+      setResults((prev) => ({
+        feasibility: feasibility ?? prev.feasibility,
+        catchment: catchment ?? prev.catchment,
+        finance: finance ?? prev.finance,
+        stress: stress ?? prev.stress,
+        schemes: schemes ?? prev.schemes,
+        alternatives: alternatives ?? prev.alternatives,
+      }));
       setHasRunAssessment(true);
     } catch (err: any) {
       console.error("Assessment execution error:", err);
@@ -186,7 +207,7 @@ export function AssessmentProvider({ children }: { children: React.ReactNode }) 
     let demoParams: AssessmentParams;
 
     if (caseId === 1) {
-      // Case 1: GO - High Feasibility Flour Mill & Food Processing
+      // Case 1: GO - High Feasibility Flour Mill & Food Processing (~85/100 GO)
       demoParams = {
         village_id: "VIL_001",
         category: "Food Processing",
@@ -195,28 +216,31 @@ export function AssessmentProvider({ children }: { children: React.ReactNode }) 
         annual_interest_rate: 9.5,
         tenure_months: 60,
         moratorium_months: 3,
+        monthly_sales: 65000,
       };
     } else if (caseId === 2) {
-      // Case 2: MODIFY - Small Manufacturing Unit
+      // Case 2: MODIFY - Small Manufacturing Unit (~71/100 MODIFY - Tight DSCR, needs equity)
       demoParams = {
         village_id: "VIL_005",
         category: "Small Manufacturing",
         expected_investment: 320000,
-        own_capital: 80000,
+        own_capital: 64000,
         annual_interest_rate: 10.0,
         tenure_months: 48,
         moratorium_months: 2,
+        monthly_sales: 56000,
       };
     } else {
-      // Case 3: AVOID - Saturated Village Retail Kirana Store
+      // Case 3: AVOID - Saturated Village Retail Kirana Store (~55/100 AVOID - Negative margin/DSCR < 1.0)
       demoParams = {
         village_id: "VIL_004",
         category: "Retail / General Store",
         expected_investment: 190000,
-        own_capital: 35000,
-        annual_interest_rate: 11.5,
+        own_capital: 20000,
+        annual_interest_rate: 12.0,
         tenure_months: 36,
         moratorium_months: 0,
+        monthly_sales: 30000,
       };
     }
 

@@ -15,10 +15,11 @@ import {
   ChevronRight,
   FileSpreadsheet,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 
 export default function FinancialPage() {
-  const { params, updateParam, results } = useAssessment();
+  const { params, updateParam, results, loadDemoCase } = useAssessment();
 
   const [finData, setFinData] = useState<any>(results.finance);
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,18 @@ export default function FinancialPage() {
   const [interestRate, setInterestRate] = useState(params.annual_interest_rate);
   const [tenureMonths, setTenureMonths] = useState(params.tenure_months);
   const [moratoriumMonths, setMoratoriumMonths] = useState(params.moratorium_months);
+
+  // Sync state when assessment params or results update
+  useEffect(() => {
+    if (results.finance) {
+      setFinData(results.finance);
+    }
+    setProjectCost(params.expected_investment);
+    setOwnContribution(params.own_capital);
+    setInterestRate(params.annual_interest_rate);
+    setTenureMonths(params.tenure_months);
+    setMoratoriumMonths(params.moratorium_months);
+  }, [results.finance, params]);
 
   const runCalculation = async () => {
     setLoading(true);
@@ -93,6 +106,82 @@ export default function FinancialPage() {
           <span>Next: Stress Simulator</span>
           <ChevronRight className="w-4 h-4" />
         </Link>
+      </div>
+
+      {/* 1-Click SIH Evaluation Presets Toolbar */}
+      <div className="bg-ivory-100/80 border border-ivory-300 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-forest-800" />
+            <span className="text-xs font-extrabold uppercase tracking-wider text-forest-950">
+              1-Click SIH Evaluation Presets:
+            </span>
+          </div>
+          <span className="text-[11px] text-charcoal-500">
+            Click any case to test instant multi-engine calculations
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => loadDemoCase(1)}
+            disabled={loading}
+            className={`p-3 rounded-xl border text-left transition-all ${
+              params.category === "Food Processing" && params.village_id === "VIL_001"
+                ? "bg-emerald-100/90 border-emerald-500 shadow-sm ring-2 ring-emerald-500/20"
+                : "bg-white border-emerald-200 hover:bg-emerald-50"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-700 text-white">
+                CASE 1: GO
+              </span>
+              <span className="text-xs font-bold text-emerald-800">DSCR 1.8+</span>
+            </div>
+            <p className="text-xs font-bold text-charcoal-900">Flour Mill &amp; Agro-Unit</p>
+            <p className="text-[10px] text-charcoal-600 mt-0.5">₹2.15L Outlay &bull; ₹53.7k Margin &bull; 9.5% Int</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => loadDemoCase(2)}
+            disabled={loading}
+            className={`p-3 rounded-xl border text-left transition-all ${
+              params.category === "Small Manufacturing" && params.village_id === "VIL_005"
+                ? "bg-amber-100/90 border-amber-500 shadow-sm ring-2 ring-amber-500/20"
+                : "bg-white border-amber-200 hover:bg-amber-50"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-600 text-white">
+                CASE 2: MODIFY
+              </span>
+              <span className="text-xs font-bold text-amber-800">DSCR 1.25</span>
+            </div>
+            <p className="text-xs font-bold text-charcoal-900">Rural Manufacturing Unit</p>
+            <p className="text-[10px] text-charcoal-600 mt-0.5">₹3.20L Outlay &bull; ₹80k Margin &bull; 10.0% Int</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => loadDemoCase(3)}
+            disabled={loading}
+            className={`p-3 rounded-xl border text-left transition-all ${
+              params.category === "Retail / General Store" && params.village_id === "VIL_004"
+                ? "bg-red-100/90 border-red-500 shadow-sm ring-2 ring-red-500/20"
+                : "bg-white border-red-200 hover:bg-red-50"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-red-700 text-white">
+                CASE 3: AVOID
+              </span>
+              <span className="text-xs font-bold text-red-800">DSCR &lt; 1.0</span>
+            </div>
+            <p className="text-xs font-bold text-charcoal-900">Saturated Village Kirana</p>
+            <p className="text-[10px] text-charcoal-600 mt-0.5">₹1.90L Outlay &bull; ₹35k Margin &bull; 11.5% Int</p>
+          </button>
+        </div>
       </div>
 
       {/* Interactive Financial Controls */}

@@ -53,6 +53,10 @@ export async function evaluateFeasibility(params: {
   category: string;
   expected_investment: number;
   own_capital: number;
+  annual_interest_rate?: number;
+  tenure_months?: number;
+  moratorium_months?: number;
+  monthly_sales?: number;
 }) {
   const res = await fetch(`${API_BASE_URL}/feasibility/evaluate`, {
     method: "POST",
@@ -109,8 +113,11 @@ export async function calculateFinance(params: {
 }
 
 export async function runStressTest(params: {
+  village_id?: string;
+  category?: string;
   project_cost: number;
-  own_contribution: number;
+  own_contribution?: number;
+  own_capital?: number;
   sales_vol_delta_pct?: number;
   price_delta_pct?: number;
   var_cost_delta_pct?: number;
@@ -120,19 +127,22 @@ export async function runStressTest(params: {
   base_variable_cost_ratio?: number;
   base_monthly_fixed_cost?: number;
 }) {
+  const ownCap = params.own_capital ?? params.own_contribution ?? 50000;
   const res = await fetch(`${API_BASE_URL}/simulator/stress`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      sales_vol_delta_pct: -20.0,
-      price_delta_pct: 0.0,
-      var_cost_delta_pct: 0.0,
-      fixed_cost_delta_pct: 0.0,
-      interest_rate_delta: 0.0,
-      base_monthly_sales: 65000,
-      base_variable_cost_ratio: 0.48,
-      base_monthly_fixed_cost: 7500,
-      ...params,
+      village_id: params.village_id || "VIL_001",
+      category: params.category || "Food Processing",
+      project_cost: params.project_cost,
+      own_capital: ownCap,
+      own_contribution: ownCap,
+      sales_vol_delta_pct: params.sales_vol_delta_pct ?? -20.0,
+      price_delta_pct: params.price_delta_pct ?? -5.0,
+      var_cost_delta_pct: params.var_cost_delta_pct ?? 15.0,
+      fixed_cost_delta_pct: params.fixed_cost_delta_pct ?? 10.0,
+      interest_rate_delta: params.interest_rate_delta ?? 1.5,
+      loan_amount_delta_pct: 0.0,
     }),
   });
   if (!res.ok) {
