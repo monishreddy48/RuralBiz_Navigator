@@ -38,8 +38,7 @@ export function Hero() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
             <Link
-              href="http://localhost:8501"
-              target="_blank"
+              href="/dashboard"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-forest-900 hover:bg-forest-950 text-white font-bold text-base shadow-lg shadow-forest-900/20 hover:shadow-xl hover:shadow-forest-900/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
             >
               <span>Get Started Now</span>

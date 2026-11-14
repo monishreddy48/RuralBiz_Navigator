@@ -22,6 +22,7 @@ export function ServicesGrid() {
       desc: "Deterministic 0–100 viability score evaluating market demand, competitor saturation, road accessibility, and financial fit, accompanied by an objective 4-quadrant SWOT matrix.",
       highlight: "Weighted 6-Factor Model",
       cta: "Evaluate Feasibility",
+      href: "/dashboard/feasibility",
     },
     {
       icon: MapPin,
@@ -30,6 +31,7 @@ export function ServicesGrid() {
       desc: "Interactive GIS catchment mapping defining the 5 km daily footfall circle and 10 km weekly haat wholesale radius, with mapped competitor entities and unmet demand gap analysis.",
       highlight: "5–10 km Catchment GIS",
       cta: "Explore Local Market",
+      href: "/dashboard/market",
     },
     {
       icon: CreditCard,
@@ -38,6 +40,7 @@ export function ServicesGrid() {
       desc: "Standard reducing-balance monthly EMI calculations, month-by-month principal and interest amortization schedules, break-even unit volumes, and Debt Service Coverage Ratio (DSCR).",
       highlight: "Institutional Debt Math",
       cta: "Structure Loan Plan",
+      href: "/dashboard/financial",
     },
     {
       icon: TrendingDown,
@@ -46,6 +49,7 @@ export function ServicesGrid() {
       desc: "Simulate adverse rural market shocks: 20% demand drops, price deflation, raw material cost inflation, or interest rate hikes to test if your business survives or enters debt stress.",
       highlight: "Enterprise Survival Verdict",
       cta: "Simulate Stress Shocks",
+      href: "/dashboard/simulator",
     },
     {
       icon: Building2,
@@ -54,6 +58,7 @@ export function ServicesGrid() {
       desc: "Rule-based matching against verified Central and State programs (PMEGP 25%–35% subsidy, MUDRA Shishu/Kishore/Tarun, PMFME, Stand-Up India) with exact eligibility checklists.",
       highlight: "Verified Subsidy Rules",
       cta: "Find Subsidies",
+      href: "/dashboard/schemes",
     },
     {
       icon: Bot,
@@ -62,6 +67,7 @@ export function ServicesGrid() {
       desc: "Conversational guidance powered by Gemini in English, Hindi, Telugu, and Kannada. Explains financial calculations and scheme terms with explainable, structured advisory responses.",
       highlight: "Grounded Regional Advisory",
       cta: "Chat with Advisor",
+      href: "/dashboard/assistant",
     },
     {
       icon: Lightbulb,
@@ -70,6 +76,7 @@ export function ServicesGrid() {
       desc: "Compare and rank all 10 rural micro-enterprise categories for your exact capital and locality to identify higher-viability business ventures with one-click adoption.",
       highlight: "Capital-Matched Ranking",
       cta: "Compare 10 Sectors",
+      href: "/dashboard/alternatives",
     },
     {
       icon: FileSpreadsheet,
@@ -78,6 +85,7 @@ export function ServicesGrid() {
       desc: "Instantly compile an institutional, 20-section Detailed Project Report (DPR) into a downloadable PDF complete with KYC declarations, amortization tables, and SWOT for bank appraisal.",
       highlight: "Downloadable 20-Section PDF",
       cta: "Generate Official DPR",
+      href: "/dashboard/dpr",
     },
   ];
 
@@ -128,8 +136,7 @@ export function ServicesGrid() {
 
                 <div className="mt-6 pt-4 border-t border-ivory-100">
                   <Link
-                    href="http://localhost:8501"
-                    target="_blank"
+                    href={svc.href}
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-forest-800 group-hover:text-forest-950 transition-colors"
                   >
                     <span>{svc.cta}</span>

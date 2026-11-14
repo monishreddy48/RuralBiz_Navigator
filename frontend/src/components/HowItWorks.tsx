@@ -96,8 +96,7 @@ export function HowItWorks() {
             </p>
           </div>
           <Link
-            href="http://localhost:8501"
-            target="_blank"
+            href="/dashboard"
             className="shrink-0 inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-ivory-100 text-forest-950 font-bold text-sm shadow-md transition-all active:scale-[0.98]"
           >
             <span>Launch Evaluation</span>
