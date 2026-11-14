@@ -2,9 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Globe, Menu, X, ArrowUpRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Globe, Menu, X, ArrowUpRight, User, LogOut, LayoutDashboard } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export function Navbar() {
+  const router = useRouter();
+  const { user, userProfile, logout } = useAuth();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState("EN");
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
@@ -15,6 +20,15 @@ export function Navbar() {
     { code: "TE", name: "తెలుగు (Telugu)" },
     { code: "KN", name: "ಕನ್ನಡ (Kannada)" },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-[#FBF9F2]/90 backdrop-blur-md border-b border-ivory-200/80 transition-all">
@@ -84,15 +98,44 @@ export function Navbar() {
               )}
             </div>
 
-            {/* Launch App / Sign In CTA */}
-            <Link
-              href="http://localhost:8501"
-              target="_blank"
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-forest-900 hover:bg-forest-950 text-white font-semibold text-sm shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
-            >
-              <span>Launch Platform</span>
-              <ArrowUpRight className="w-4 h-4 opacity-75" />
-            </Link>
+            {/* Auth Conditional Display */}
+            {user ? (
+              <div className="flex items-center gap-2.5">
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-forest-50 hover:bg-forest-100 text-forest-900 border border-forest-200 font-semibold text-xs shadow-sm transition-all"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5 text-forest-700" />
+                  <span>Dashboard</span>
+                </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-charcoal-600 hover:text-red-700 hover:bg-ivory-100 text-xs font-semibold transition-all"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-xs font-bold text-charcoal-700 hover:text-forest-950 transition-colors"
+                >
+                  Sign In
+                </Link>
+
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-forest-900 hover:bg-forest-950 text-white font-semibold text-xs shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
+                >
+                  <span>Get Started</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-75" />
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Toggle Button */}
@@ -158,13 +201,43 @@ export function Navbar() {
               </select>
             </div>
 
-            <Link
-              href="http://localhost:8501"
-              target="_blank"
-              className="w-full text-center py-2.5 rounded-xl bg-forest-900 text-white font-semibold text-sm shadow-sm"
-            >
-              Launch Platform &rarr;
-            </Link>
+            {user ? (
+              <div className="flex flex-col gap-2 pt-1">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-2.5 rounded-xl bg-forest-900 text-white font-semibold text-sm shadow-sm"
+                >
+                  Go to Dashboard &rarr;
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full text-center py-2 rounded-xl border border-ivory-300 bg-white text-red-700 font-semibold text-xs"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 pt-1">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-2.5 rounded-xl border border-ivory-300 bg-white text-charcoal-800 font-semibold text-sm"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-2.5 rounded-xl bg-forest-900 text-white font-semibold text-sm shadow-sm"
+                >
+                  Get Started (Register) &rarr;
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
