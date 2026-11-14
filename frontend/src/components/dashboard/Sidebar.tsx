@@ -21,6 +21,7 @@ import {
   Menu,
   X,
   ShieldCheck,
+  Mic,
 } from "lucide-react";
 
 interface NavItem {
@@ -72,7 +73,7 @@ export function Sidebar() {
     {
       label: "AI SUPPORT",
       items: [
-        { name: "AI Assistant", href: "/dashboard/assistant", icon: Bot },
+        { name: "AI Voice Advisor", href: "/dashboard/assistant", icon: Mic },
       ],
     },
     {
@@ -252,3 +253,4 @@ export function Sidebar() {
     </>
   );
 }
+

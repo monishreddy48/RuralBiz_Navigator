@@ -114,12 +114,12 @@ export default function DashboardOverviewPage() {
       status: results.alternatives ? "10 trades ranked" : "Ready to rank",
     },
     {
-      title: "AI Business Advisor",
-      desc: "Explainable multilingual guidance powered by Gemini in English, Hindi, Telugu, and Kannada.",
+      title: "AI Voice & Text Advisor",
+      desc: "Real-time conversational voice and explainable advice via Gemini Live in Kannada, Telugu, Hindi, and English.",
       href: "/dashboard/assistant",
       icon: Bot,
-      tag: "Multilingual AI",
-      status: "Online & Grounded",
+      tag: "Gemini Live Voice",
+      status: "Live Multilingual Audio",
     },
     {
       title: "DPR Report Generator",

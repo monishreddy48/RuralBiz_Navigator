@@ -3,6 +3,7 @@
 import React from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Sidebar } from "@/components/dashboard/Sidebar";
+import FloatingVoiceButton from "@/components/voice/FloatingVoiceButton";
 
 export default function DashboardLayout({
   children,
@@ -15,8 +16,10 @@ export default function DashboardLayout({
         <Sidebar />
         <div className="flex-1 lg:pl-72 flex flex-col min-h-screen">
           {children}
+          <FloatingVoiceButton />
         </div>
       </div>
     </ProtectedRoute>
   );
 }
+

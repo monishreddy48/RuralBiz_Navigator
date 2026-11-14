@@ -186,3 +186,39 @@ export async function askAiAssistant(question: string, context?: any, language =
   }
   return await res.json();
 }
+
+export async function fetchVoiceSession() {
+  const res = await fetch(`${API_BASE_URL}/voice/session`);
+  if (!res.ok) {
+    throw new Error(`Failed to initialize voice session (HTTP ${res.status})`);
+  }
+  return await res.json();
+}
+
+export async function queryVoiceAdvisor(
+  text: string,
+  language: string,
+  context?: Record<string, any>
+) {
+  const res = await fetch(`${API_BASE_URL}/voice/query`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, language, context }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Failed to query voice advisor (HTTP ${res.status})`);
+  }
+  return await res.json();
+}
+
+export function getVoiceWebSocketUrl(): string {
+  // Convert http/https URL to ws/wss
+  const httpUrl = API_BASE_URL;
+  if (httpUrl.startsWith("https://")) {
+    return `${httpUrl.replace("https://", "wss://")}/voice/live`;
+  }
+  return `${httpUrl.replace("http://", "ws://")}/voice/live`;
+}
+
+
