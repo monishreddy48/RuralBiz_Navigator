@@ -1,0 +1,11 @@
+business_id,business_name,category,typical_capex,typical_working_capital,monthly_fixed_cost,variable_cost_ratio,typical_monthly_sales,typical_margin,break_even_months,risk_level,skill_requirement,market_dependency,growth_potential,unit_price_estimate,typical_monthly_units,data_source_label
+BIZ_001,Dairy Farming Unit,Dairy,220000,45000,8500,0.52,78000,0.26,6,Medium,Moderate,Local,Moderate,55,1418,Prototype benchmark / simulated data
+BIZ_002,Commercial Poultry Unit,Poultry,280000,60000,12000,0.64,110000,0.21,8,High,High,Regional,High,160,687,Prototype benchmark / simulated data
+BIZ_003,Food Processing Unit,Food Processing,180000,35000,7500,0.48,65000,0.32,5,Low,Moderate,Local,High,80,812,Prototype benchmark / simulated data
+BIZ_004,Tailoring & Boutique,Tailoring,75000,18000,4500,0.35,38000,0.42,4,Low,High,Local,Moderate,350,108,Prototype benchmark / simulated data
+BIZ_005,Handicrafts & Handloom,Handicrafts,90000,22000,4000,0.38,32000,0.40,7,Medium,High,Regional,Moderate,250,128,Prototype benchmark / simulated data
+BIZ_006,Retail / General Kirana,Retail / General Store,140000,50000,6500,0.78,95000,0.14,6,Low,Low,Local,Low,120,791,Prototype benchmark / simulated data
+BIZ_007,Mobile & Electronics Repair,Mobile Repair,110000,25000,5500,0.32,42000,0.45,5,Medium,High,Local,High,300,140,Prototype benchmark / simulated data
+BIZ_008,Vegetable & Fruit Processing,Vegetable Processing,240000,48000,9500,0.50,82000,0.28,6,Medium,Moderate,Regional,High,90,911,Prototype benchmark / simulated data
+BIZ_009,Small Rural Manufacturing,Small Manufacturing,380000,85000,16000,0.58,135000,0.24,9,High,High,Regional,High,25,5400,Prototype benchmark / simulated data
+BIZ_010,Digital & CSC Kiosk,Digital / Service Centre,85000,15000,4200,0.22,34000,0.55,3,Low,Moderate,Local,Moderate,50,680,Prototype benchmark / simulated data

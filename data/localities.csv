@@ -1,0 +1,8 @@
+village_id,village_name,district,state,latitude,longitude,population,households,average_household_size,market_distance_km,nearest_town_distance_km,road_access_score,public_transport_score,internet_access_score,bank_access_score,weekly_market_frequency,agriculture_dependency,livestock_dependency,local_demand_index,purchasing_power_index,is_prototype
+VIL_001,Demo Village A (Agri Hub),Ludhiana,Punjab,30.9010,75.8573,4200,750,5.6,3.5,12.0,85,75,80,90,2,82,68,78,82,True
+VIL_002,Demo Village B (Coastal Valley),Krishna,Andhra Pradesh,16.1809,81.1303,3800,810,4.7,6.0,15.5,78,65,72,70,1,75,45,71,69,True
+VIL_003,Demo Village C (Dryland Plateau),Tumakuru,Karnataka,13.3409,77.1010,2900,580,5.0,8.5,22.0,65,55,60,60,1,68,72,62,58,True
+VIL_004,Demo Village D (Peri-Urban Belt),Varanasi,Uttar Pradesh,25.3176,82.9739,7800,1350,5.8,1.8,6.0,90,88,85,85,3,40,30,88,74,True
+VIL_005,Demo Village E (Horticulture Cluster),Nashik,Maharashtra,19.9975,73.7898,5100,940,5.4,4.2,14.0,82,70,75,75,2,88,55,80,78,True
+VIL_006,Demo Village F (Craft & Heritage),Jodhpur,Rajasthan,26.2389,73.0243,2400,430,5.6,12.0,28.0,58,45,55,50,1,50,40,52,50,True
+VIL_007,Demo Village G (Forest Belt),Mayurbhanj,Odisha,21.9322,86.7380,2100,410,5.1,14.5,35.0,45,35,40,38,1,60,50,46,42,True

@@ -1,0 +1,11 @@
+business_id,business_name,category,short_description,target_customer_base,typical_space_sqft,electricity_requirement
+BIZ_001,Dairy Farming Unit,Dairy,Small commercial dairy with 2-5 crossbred milch cows producing daily fresh milk,Local households & milk cooperative society,600,Low
+BIZ_002,Commercial Poultry Unit,Poultry,Broiler or layer poultry farm with biosecure shed for meat & eggs,Local poultry traders & village meat shops,800,Moderate
+BIZ_003,Food Processing Unit,Food Processing,Spices grinding flour mill papad pickle and packaged condiments,Village households local hotels & weekly haat,400,Moderate
+BIZ_004,Tailoring & Boutique,Tailoring,Stitching school uniforms bridal blouses alterations & readymade ethnic wear,Village women children & school contracts,200,Low
+BIZ_005,Handicrafts & Handloom,Handicrafts,Traditional artisan crafts bamboo pottery weaving and decor items,Local fairs tourists & regional craft hubs,250,Low
+BIZ_006,Retail / General Kirana,Retail / General Store,Daily groceries packaged staples personal care confectionery and stationery,Neighborhood residential cluster,300,Low
+BIZ_007,Mobile & Electronics Repair,Mobile Repair,Smartphone screen repair accessories recharge audio cables and basic gadgets,Rural youth students & farmers,150,Low
+BIZ_008,Vegetable & Fruit Processing,Vegetable Processing,Cleaning grading dehydration packhouse and solar dried produce,Local mandi retail traders & urban supply chain,500,Moderate
+BIZ_009,Small Rural Manufacturing,Small Manufacturing,Fly-ash bricks paper cups packaging corrugated boxes & agricultural tools,Local builders contractors & shopkeepers,1000,High
+BIZ_010,Digital & CSC Kiosk,Digital / Service Centre,Government G2C services banking correspondent ticketing xerox & printing,All village residents farmers & pensioners,180,Low
