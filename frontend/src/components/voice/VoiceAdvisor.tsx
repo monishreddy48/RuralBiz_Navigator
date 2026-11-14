@@ -116,8 +116,8 @@ export default function VoiceAdvisor() {
       own_contribution: params.own_capital || 53750,
       monthly_emi: results.finance?.monthly_emi || 3418,
       dscr: results.finance?.dscr || 1.65,
-      viability_score: results.feasibility?.composite_score || 78,
-      verdict: results.feasibility?.recommendation?.verdict || "GO",
+      viability_score: results.feasibility?.viability_score ?? results.feasibility?.composite_score ?? 78,
+      verdict: results.feasibility?.recommendation?.decision ?? results.feasibility?.recommendation?.verdict ?? "GO",
       category: params.category || userProfile?.businessCategory || "Food Processing",
       business_category: params.category || userProfile?.businessCategory || "Food Processing",
       village: userProfile?.village || params.village_id || "Rural Enterprise Catchment",
@@ -500,7 +500,7 @@ export default function VoiceAdvisor() {
     setLiveApiConnected(false);
   };
 
-  // Switch Language
+  // Switch Language & vocalize announcement
   const handleLanguageChange = (lang: SupportedLanguage) => {
     setSelectedLang(lang);
     if (recognitionRef.current) {
@@ -515,7 +515,71 @@ export default function VoiceAdvisor() {
         })
       );
     }
+
+    const greeting = VOICE_LANGUAGES[lang].greeting;
+    const followUps = [
+      VOICE_LANGUAGES[lang].sampleQuestion,
+      lang === "kn"
+        ? "ಪಿಎಂಇಜಿಪಿ 35% ಸಬ್ಸಿಡಿ ಹೇಗೆ ಪಡೆಯುವುದು?"
+        : lang === "te"
+        ? "నెలవారీ ఇఎంఐ ఎంత అవుతుంది?"
+        : lang === "hi"
+        ? "PMEGP 35% सब्सिडी की शर्तें क्या हैं?"
+        : "What is my project break-even volume?",
+      lang === "kn"
+        ? "ನನ್ನ ಗ್ರಾಮದಲ್ಲಿ ಸ್ಪರ್ಧಾತ್ಮಕ ಅಪಾಯಗಳೇನು?"
+        : lang === "te"
+        ? "స్థానిక మార్కెట్‌లో పోటీదారులు ఎంతమంది?"
+        : lang === "hi"
+        ? "स्थानीय ग्राहक मांग का विश्लेषण"
+        : "What is my monthly break-even revenue?",
+    ];
+
+    const langMsg: TranscriptMessage = {
+      id: "lang-" + Date.now(),
+      sender: "model",
+      text: greeting,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      followUps,
+      locale: VOICE_LANGUAGES[lang].locale,
+    };
+
+    setHistory((prev) => [...prev, langMsg]);
+    speakText(greeting, lang);
   };
+
+  // Populate initial greeting on mount
+  useEffect(() => {
+    const greeting = VOICE_LANGUAGES[selectedLang].greeting;
+    const followUps = [
+      VOICE_LANGUAGES[selectedLang].sampleQuestion,
+      selectedLang === "kn"
+        ? "ಪಿಎಂಇಜಿಪಿ 35% ಸಬ್ಸಿಡಿ ಹೇಗೆ ಪಡೆಯುವುದು?"
+        : selectedLang === "te"
+        ? "నెలవారీ ఇఎంఐ ఎంత అవుతుంది?"
+        : selectedLang === "hi"
+        ? "PMEGP 35% सब्सिडी की शर्तें क्या हैं?"
+        : "What is my project break-even volume?",
+      selectedLang === "kn"
+        ? "ನನ್ನ ಗ್ರಾಮದಲ್ಲಿ ಸ್ಪರ್ಧಾತ್ಮಕ ಅಪಾಯಗಳೇನು?"
+        : selectedLang === "te"
+        ? "స్థానిక మార్కెట్‌లో పోటీదారులు ఎంతమంది?"
+        : selectedLang === "hi"
+        ? "स्थानीय ग्राहक मांग का विश्लेषण"
+        : "What is my monthly break-even revenue?",
+    ];
+
+    setHistory([
+      {
+        id: "init-" + selectedLang,
+        sender: "model",
+        text: greeting,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        followUps,
+        locale: VOICE_LANGUAGES[selectedLang].locale,
+      },
+    ]);
+  }, []);
 
   // Clean up on unmount
   useEffect(() => {

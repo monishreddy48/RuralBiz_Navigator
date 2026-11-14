@@ -65,8 +65,8 @@ export default function AssistantPage() {
         category: params.category,
         expected_investment: params.expected_investment,
         own_capital: params.own_capital,
-        viability_score: results.feasibility?.composite_score,
-        verdict: results.feasibility?.recommendation?.verdict,
+        viability_score: results.feasibility?.viability_score ?? results.feasibility?.composite_score,
+        verdict: results.feasibility?.recommendation?.decision ?? results.feasibility?.recommendation?.verdict,
         monthly_emi: results.finance?.monthly_emi,
         dscr: results.finance?.dscr,
       };

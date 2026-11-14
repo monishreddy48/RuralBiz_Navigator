@@ -43,6 +43,25 @@ async def evaluate_feasibility(req: FeasibilityRequest):
     
     # 4. Recommendation & SWOT
     recommendation = generate_business_recommendation(viability, fin_plan, hl_metrics, business, locality)
+    recommendation["verdict"] = recommendation["decision"]
+
+    factor_labels = {
+        "market_demand": ("Market Demand", 0.25),
+        "competition": ("Competition Saturation", 0.15),
+        "accessibility": ("Infrastructure & Road Access", 0.10),
+        "financial_fit": ("Financial Fit & Debt Coverage", 0.20),
+        "growth_potential": ("Growth Potential", 0.15),
+        "risk_resilience": ("Risk Resilience", 0.15)
+    }
+    factor_scores = []
+    for k, (label, weight) in factor_labels.items():
+        score = viability["breakdown"].get(k, 70.0)
+        factor_scores.append({
+            "factor": label,
+            "score": round(score, 1),
+            "weight": weight,
+            "contribution": round(score * weight, 1)
+        })
     
     # 5. Persist to DB
     assessment_id = save_assessment_record({
@@ -61,10 +80,12 @@ async def evaluate_feasibility(req: FeasibilityRequest):
     return FeasibilityResponse(
         assessment_id=assessment_id,
         viability_score=viability["viability_score"],
+        composite_score=viability["viability_score"],
         classification=viability["classification"],
         status_color=viability["status_color"],
         status_badge=viability["status_badge"],
         breakdown=viability["breakdown"],
+        factor_scores=factor_scores,
         recommendation=recommendation,
         financial_summary={
             "project_cost": fin_plan["project_cost"],

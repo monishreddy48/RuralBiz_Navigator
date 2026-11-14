@@ -236,8 +236,8 @@ export function AssessmentProvider({ children }: { children: React.ReactNode }) 
         year: "numeric",
       }),
       params: { ...params },
-      viabilityScore: results.feasibility.composite_score || 75,
-      verdict: results.feasibility.recommendation?.verdict || "GO",
+      viabilityScore: results.feasibility.viability_score || results.feasibility.composite_score || 75,
+      verdict: (results.feasibility.recommendation?.decision || results.feasibility.recommendation?.verdict || "GO") as "GO" | "MODIFY" | "AVOID",
       category: params.category,
       villageName: results.feasibility.locality_name || params.village_id,
     };

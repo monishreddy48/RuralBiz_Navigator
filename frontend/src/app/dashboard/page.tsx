@@ -71,7 +71,7 @@ export default function DashboardOverviewPage() {
       href: "/dashboard/feasibility",
       icon: BarChart3,
       tag: "Intelligence",
-      status: results.feasibility ? `Score: ${results.feasibility.composite_score}/100` : "Ready to evaluate",
+      status: results.feasibility ? `Score: ${results.feasibility.viability_score ?? results.feasibility.composite_score}/100` : "Ready to evaluate",
     },
     {
       title: "Hyperlocal Market Analysis",

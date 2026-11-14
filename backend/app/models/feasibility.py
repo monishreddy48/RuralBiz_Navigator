@@ -31,6 +31,7 @@ class SWOTAnalysis(BaseModel):
 
 class RecommendationResponse(BaseModel):
     decision: str
+    verdict: Optional[str] = None
     decision_label: str
     decision_color: str
     reasons: List[str]
@@ -43,10 +44,12 @@ class RecommendationResponse(BaseModel):
 class FeasibilityResponse(BaseModel):
     assessment_id: Optional[str] = None
     viability_score: float
+    composite_score: Optional[float] = None
     classification: str
     status_color: str
     status_badge: str
     breakdown: Dict[str, float]
+    factor_scores: Optional[List[Dict[str, Any]]] = None
     recommendation: RecommendationResponse
     financial_summary: Dict[str, Any]
     hyperlocal_summary: Dict[str, Any]

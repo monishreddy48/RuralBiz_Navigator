@@ -18,6 +18,7 @@ import {
   MapPin,
   Coins,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 
 export default function FeasibilityPage() {
@@ -29,6 +30,7 @@ export default function FeasibilityPage() {
     error,
     hasRunAssessment,
     runFullAssessment,
+    loadDemoCase,
     saveCurrentAssessment,
   } = useAssessment();
 
@@ -55,15 +57,15 @@ export default function FeasibilityPage() {
   };
 
   const feasibility = results.feasibility;
-  const compositeScore = feasibility?.composite_score ?? 78;
-  const verdict = feasibility?.recommendation?.verdict ?? "GO";
+  const compositeScore = feasibility?.viability_score ?? feasibility?.composite_score ?? 78;
+  const verdict = feasibility?.recommendation?.decision ?? feasibility?.recommendation?.verdict ?? "GO";
   const factors = feasibility?.factor_scores || [
     { factor: "Market Demand", score: 82, weight: 0.25, contribution: 20.5 },
-    { factor: "Competition Saturation", score: 75, weight: 0.2, contribution: 15.0 },
-    { factor: "Infrastructure & Road Access", score: 85, weight: 0.15, contribution: 12.8 },
-    { factor: "Purchasing Power", score: 78, weight: 0.15, contribution: 11.7 },
-    { factor: "Financial Fit & Debt Coverage", score: 74, weight: 0.15, contribution: 11.1 },
-    { factor: "Operational Simplicity", score: 80, weight: 0.1, contribution: 8.0 },
+    { factor: "Competition Saturation", score: 75, weight: 0.15, contribution: 11.3 },
+    { factor: "Infrastructure & Road Access", score: 85, weight: 0.10, contribution: 8.5 },
+    { factor: "Financial Fit & Debt Coverage", score: 74, weight: 0.20, contribution: 14.8 },
+    { factor: "Growth Potential", score: 80, weight: 0.15, contribution: 12.0 },
+    { factor: "Risk Resilience", score: 70, weight: 0.15, contribution: 10.5 },
   ];
 
   const swot = feasibility?.recommendation?.swot || {
@@ -127,6 +129,82 @@ export default function FeasibilityPage() {
             <span>Next: Catchment GIS</span>
             <ChevronRight className="w-4 h-4" />
           </Link>
+        </div>
+      </div>
+
+      {/* 1-Click SIH Evaluation Presets Toolbar */}
+      <div className="bg-ivory-100/80 border border-ivory-300 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-forest-800" />
+            <span className="text-xs font-extrabold uppercase tracking-wider text-forest-950">
+              1-Click SIH Evaluation Presets:
+            </span>
+          </div>
+          <span className="text-[11px] text-charcoal-500">
+            Click any case to test instant multi-engine calculations
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => loadDemoCase(1)}
+            disabled={loading}
+            className={`p-3 rounded-xl border text-left transition-all ${
+              params.category === "Food Processing" && params.village_id === "VIL_001"
+                ? "bg-emerald-100/90 border-emerald-500 shadow-sm ring-2 ring-emerald-500/20"
+                : "bg-white border-emerald-200 hover:bg-emerald-50"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-700 text-white">
+                CASE 1: GO
+              </span>
+              <span className="text-xs font-bold text-emerald-800">~82/100</span>
+            </div>
+            <p className="text-xs font-bold text-charcoal-900">Flour Mill &amp; Agro-Unit</p>
+            <p className="text-[10px] text-charcoal-600 mt-0.5">Tumakuru &bull; ₹2.15L Outlay &bull; PMEGP 35%</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => loadDemoCase(2)}
+            disabled={loading}
+            className={`p-3 rounded-xl border text-left transition-all ${
+              params.category === "Small Manufacturing" && params.village_id === "VIL_005"
+                ? "bg-amber-100/90 border-amber-500 shadow-sm ring-2 ring-amber-500/20"
+                : "bg-white border-amber-200 hover:bg-amber-50"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-600 text-white">
+                CASE 2: MODIFY
+              </span>
+              <span className="text-xs font-bold text-amber-800">~58/100</span>
+            </div>
+            <p className="text-xs font-bold text-charcoal-900">Rural Manufacturing Unit</p>
+            <p className="text-[10px] text-charcoal-600 mt-0.5">Nashik &bull; ₹3.20L Outlay &bull; Needs Equity</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => loadDemoCase(3)}
+            disabled={loading}
+            className={`p-3 rounded-xl border text-left transition-all ${
+              params.category === "Retail / General Store" && params.village_id === "VIL_004"
+                ? "bg-red-100/90 border-red-500 shadow-sm ring-2 ring-red-500/20"
+                : "bg-white border-red-200 hover:bg-red-50"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-red-700 text-white">
+                CASE 3: AVOID
+              </span>
+              <span className="text-xs font-bold text-red-800">~44/100</span>
+            </div>
+            <p className="text-xs font-bold text-charcoal-900">Saturated Village Kirana</p>
+            <p className="text-[10px] text-charcoal-600 mt-0.5">Peri-Urban &bull; 8 Competitors &bull; DSCR &lt; 1.0</p>
+          </button>
         </div>
       </div>
 
